@@ -1,0 +1,15 @@
+{{ $css_options := dict "targetPath" "css/main.css" }}
+
+{{- if (in (slice (getenv "HUGO_ENV") hugo.Environment) "production") -}}
+  {{- $css_options = merge $css_options (dict "outputStyle" "compressed") -}}
+{{- end -}}
+
+{{ $style := resources.Get "css/tailwind.min.css" }}
+
+{{ if not .Site.IsServer }}
+{{ $style = $style | postCSS | minify | fingerprint }}
+{{ end }}
+
+{{ $style := $style | minify | fingerprint }}
+
+<link rel="stylesheet" href="{{ $style.RelPermalink }}">
